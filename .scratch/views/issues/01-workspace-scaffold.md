@@ -4,11 +4,11 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-human
+**Status:** ready-for-agent
 
 - [x] macOS backend is a stub that compiles
 - [x] Core crate has no OS calls and compiles on any target
-- [ ] CI green on Windows and macOS (fmt, clippy -D warnings, test)
+- [x] CI green on Windows and macOS (fmt, clippy -D warnings, test)
 
 ## Comments
 
@@ -26,3 +26,8 @@ Verified locally: `cargo fmt --all --check`, `cargo build`, `cargo clippy --work
 — no MSVC linker installed (rustup installed the msvc toolchain without Visual Studio,
 so `link.exe` resolves to MSYS's `link`). The two tests compile; they run in CI
 (`.github/workflows/ci.yml`), which also needs a remote to exist.
+
+CI is green on `windows-latest` and `macos-latest` (run 38179137977, repo `Finch-build/views`).
+Since the scaffold: the `ipc` crate was removed (ADR 0002), `panic = "abort"` joined the
+release profile, and the Settings UI became its own workspace. Locally the GNU toolchain
+(`stable-x86_64-pc-windows-gnu`) links and runs the tests; CI and releases use MSVC.
