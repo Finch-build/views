@@ -1,0 +1,77 @@
+body {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+}
+
+.title {
+  padding: calc(2 * var(--cell));
+  white-space: pre;
+  /* Its own layer, which is drawn without subpixel antialiasing: on the
+     block letters that shows as fringes of colour. */
+  will-change: transform;
+}
+
+.title > span {
+  display: block;
+}
+
+.tabs {
+  display: flex;
+  height: calc(4 * var(--cell));
+  padding: 0 calc(2 * var(--cell));
+  border-bottom: var(--line) solid var(--ink);
+}
+
+.tab {
+  padding: 0 calc(2 * var(--cell));
+  border: 0;
+  background: none;
+  font-family: var(--font-display);
+  font-size: calc(2 * var(--cell));
+  font-weight: 500;
+}
+
+.tab[aria-current="page"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.screen {
+  display: grid;
+  align-content: start;
+  gap: calc(2 * var(--cell));
+  padding: calc(2 * var(--cell));
+  overflow-y: auto;
+}
+
+.bar {
+  display: flex;
+  align-items: start;
+  gap: calc(2 * var(--cell));
+  padding: calc(2 * var(--cell) - var(--line)) calc(2 * var(--cell)) var(--cell);
+  border-top: var(--line) solid var(--ink);
+}
+
+.bar > [role="status"] {
+  flex: 1;
+  padding: var(--cell) 0;
+}
+
+/* What stands in for a screen while the config cannot be read. */
+.notice {
+  display: grid;
+  justify-items: start;
+  gap: calc(2 * var(--cell));
+  padding: var(--cell) 0;
+}
+
+/* A new outcome blinks its marker twice. */
+.bar .status::before {
+  animation: blink calc(2 * var(--step)) steps(2, jump-none) 2 var(--play);
+}
+
+@keyframes blink {
+  from {
+    opacity: 0;
+  }
+}

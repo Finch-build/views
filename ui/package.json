@@ -1,0 +1,20 @@
+{
+  "name": "views-settings",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test": "node --test",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.12.3",
+    "ascii.rest": "github:bas3line/ascii"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4"
+  }
+}

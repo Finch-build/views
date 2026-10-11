@@ -1,0 +1,32 @@
+/* general */
+
+.about {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: calc(3 * var(--cell));
+  padding: var(--cell) 0;
+}
+
+.about > img {
+  object-fit: contain;
+}
+
+.about > .mark {
+  width: calc(12 * var(--cell));
+  height: calc(10 * var(--cell));
+}
+
+.about > .wordmark {
+  width: calc(10 * var(--cell));
+  height: calc(6 * var(--cell));
+}
+
+.about .soft {
+  color: var(--soft);
+}
+
+.path {
+  overflow-wrap: anywhere;
+  user-select: text;
+}

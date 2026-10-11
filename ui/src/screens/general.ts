@@ -1,0 +1,35 @@
+import mark from "../../design/brand/finch-mark.png";
+import wordmark from "../../design/brand/finch-wordmark.png";
+import { configPath, version } from "../commands";
+import { h } from "../dom";
+import type { Screen } from "../screens";
+import { panel, row } from "../ui";
+
+export const general: Screen = {
+  name: "General",
+  render() {
+    const path = h("span", { className: "path" });
+    const release = h("span");
+    void configPath().then((found) => (path.textContent = found));
+    void version().then((found) => (release.textContent = found));
+    return [
+      panel("Config file", row("Location", path)),
+      panel(
+        "About",
+        h(
+          "div",
+          { className: "about" },
+          h("img", { className: "mark", src: mark, alt: "" }),
+          h(
+            "div",
+            {},
+            h("p", {}, "views ", release),
+            h("p", { className: "soft" }, "Moves application windows to a chosen Monitor and Zone when they open."),
+            h("p", { className: "soft" }, "finch.dev"),
+          ),
+          h("img", { className: "wordmark", src: wordmark, alt: "Finch.DEV" }),
+        ),
+      ),
+    ];
+  },
+};

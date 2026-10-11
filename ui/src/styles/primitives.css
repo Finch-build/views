@@ -1,0 +1,170 @@
+/* panel */
+
+.panel {
+  min-width: 0;
+  padding: var(--cell) calc(2 * var(--cell) - var(--line)) calc(var(--cell) - var(--line));
+  border: var(--line) solid var(--ink);
+}
+
+.panel > legend {
+  padding: 0 var(--cell);
+  font-family: var(--font-display);
+  font-size: calc(2 * var(--cell));
+  font-weight: 500;
+}
+
+/* row */
+
+.row {
+  display: grid;
+  grid-template-columns: calc(16 * var(--cell)) 1fr;
+  grid-auto-flow: column;
+  grid-auto-columns: auto;
+  align-items: center;
+  gap: 0 calc(2 * var(--cell));
+  min-height: calc(6 * var(--cell));
+  padding: var(--cell) 0;
+}
+
+.row + .row {
+  border-top: var(--line) solid var(--rule);
+  padding-top: calc(var(--cell) - var(--line));
+}
+
+.row > :first-child {
+  color: var(--soft);
+}
+
+/* button */
+
+.button {
+  height: calc(4 * var(--cell));
+  padding: 0 calc(2 * var(--cell) - var(--line));
+  border: var(--line) solid var(--ink);
+  background: var(--paper);
+}
+
+.button:enabled:not(.primary):hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.button:disabled {
+  border-color: var(--soft);
+  color: var(--soft);
+}
+
+/* The one hard shadow in the system: it marks the action a view exists
+   for, and the button drops into it when pressed. */
+.button.primary {
+  margin: 0 var(--cell) var(--cell) 0;
+  transition: var(--step) steps(2);
+  transition-property: translate, box-shadow;
+}
+
+.button.primary:enabled {
+  box-shadow: var(--cell) var(--cell) 0 var(--ink);
+}
+
+.button.primary:enabled:active {
+  translate: var(--cell) var(--cell);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+/* text field and select */
+
+.text,
+.select > select {
+  width: 100%;
+  height: calc(4 * var(--cell));
+  padding: 0 calc(var(--cell) - var(--line));
+  border: var(--line) solid var(--ink);
+  background: var(--paper);
+}
+
+.text {
+  user-select: text;
+}
+
+.select {
+  position: relative;
+}
+
+.select > select {
+  appearance: none;
+  padding-right: calc(4 * var(--cell));
+}
+
+.select::after {
+  content: "▼";
+  position: absolute;
+  top: var(--cell);
+  right: calc(2 * var(--cell) - var(--line));
+  pointer-events: none;
+}
+
+/* toggle */
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: calc(2 * var(--cell));
+  min-height: calc(4 * var(--cell));
+}
+
+.toggle > input {
+  appearance: none;
+  flex: none;
+  width: calc(4 * var(--cell));
+  height: calc(2 * var(--cell));
+  border: var(--line) solid var(--ink);
+  background: var(--paper);
+}
+
+.toggle > input::before {
+  content: "";
+  display: block;
+  width: calc(2 * var(--cell) - 2 * var(--line));
+  height: 100%;
+  background: var(--soft);
+  transition: translate var(--step) steps(2);
+}
+
+.toggle > input:checked::before {
+  background: var(--ink);
+  translate: calc(2 * var(--cell));
+}
+
+/* status */
+
+.status {
+  display: flex;
+  gap: var(--cell);
+  user-select: text;
+}
+
+.status::before {
+  content: "";
+  flex: none;
+  width: var(--cell);
+  height: var(--cell);
+  margin-top: calc(var(--cell) / 2);
+  border: var(--line) solid var(--signal, var(--soft));
+  background: var(--signal);
+}
+
+.status.good {
+  --signal: var(--moss);
+}
+
+.status.info {
+  --signal: var(--slate);
+}
+
+.status.warn {
+  --signal: var(--ochre);
+}
+
+.status.bad {
+  --signal: var(--clay);
+}

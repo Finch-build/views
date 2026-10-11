@@ -1,0 +1,249 @@
+/**
+ * @name Finch
+ * @author Finch.DEV
+ * @version 1.0.0
+ * @description Monochrome ink-on-paper theme from the Finch identity system. Reversed (dark) variant. Square corners, hairline rules, colour only for state.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Public+Sans:wght@300;400;500;700&display=swap");
+
+:root {
+  /* --- palette ------------------------------------------------------ */
+  --f-ink:        #101211;
+  --f-ink-80:     #2E312F;
+  --f-ink-55:     #6B6E6C;
+  --f-ink-35:     #A8AAA7;
+  --f-rule:       #E3E3DF;
+  --f-paper:      #F4F4F1;
+
+  /* signal — dark-surface variants only */
+  --f-moss:       #8FAF95;
+  --f-slate:      #86A6C2;
+  --f-ochre:      #C9A85F;
+  --f-clay:       #C98879;
+  --f-iris:       #A197C4;
+
+  /* reversed surfaces: ink is the paper */
+  --f-bg-0:       #0A0B0A;
+  --f-bg-1:       #101211;
+  --f-bg-2:       #171A18;
+  --f-bg-3:       #1E211F;
+  --f-hairline:   rgba(244,244,241,0.14);
+
+  /* --- type --------------------------------------------------------- */
+  --font-primary:  'Public Sans', system-ui, sans-serif;
+  --font-display:  'Public Sans', system-ui, sans-serif;
+  --font-headline: 'Public Sans', system-ui, sans-serif;
+  --font-code:     'JetBrains Mono', monospace;
+
+  /* --- geometry: the system has no rounded corners ------------------ */
+  --radius-xxs: 0; --radius-xs: 0; --radius-sm: 0;
+  --radius-md: 0;  --radius-lg: 0; --radius-xl: 0;
+  --radius-refresh-xs: 0; --radius-refresh-sm: 0; --radius-refresh-md: 0;
+  --radius-refresh-lg: 0; --radius-refresh-xl: 0;
+  /* --radius-round left alone: avatars and status dots stay circles */
+
+  /* --- elevation: replaced by hairlines, never shadow --------------- */
+  --elevation-stroke: 0 0 0 1px var(--f-hairline);
+  --elevation-low:    0 0 0 1px var(--f-hairline);
+  --elevation-medium: 0 0 0 1px var(--f-hairline);
+  --elevation-high:   0 0 0 1px var(--f-hairline);
+  --shadow-low: none; --shadow-medium: none; --shadow-high: none;
+  --shadow-border-only: 0 0 0 1px var(--f-hairline);
+}
+
+.theme-dark, .theme-light, :root {
+  /* backgrounds — legacy tokens */
+  --background-primary:        var(--f-bg-1);
+  --background-secondary:      var(--f-bg-0);
+  --background-secondary-alt:  var(--f-bg-0);
+  --background-tertiary:       var(--f-bg-0);
+  --background-accent:         var(--f-ink-80);
+  --background-floating:       var(--f-bg-2);
+  --background-nested-floating: var(--f-bg-3);
+  --background-mobile-primary:   var(--f-bg-1);
+  --background-mobile-secondary: var(--f-bg-0);
+  --background-message-hover:  rgba(244,244,241,0.03);
+  --background-modifier-hover:    rgba(244,244,241,0.05);
+  --background-modifier-active:   rgba(244,244,241,0.08);
+  --background-modifier-selected: rgba(244,244,241,0.10);
+  --background-modifier-accent:   var(--f-hairline);
+  --channeltextarea-background: var(--f-bg-2);
+  --deprecated-panel-background: var(--f-bg-0);
+  --deprecated-quickswitcher-input-background: var(--f-bg-2);
+  --deprecated-text-input-bg:  var(--f-bg-2);
+  --deprecated-text-input-border: var(--f-hairline);
+
+  /* backgrounds — 2024 redesign tokens */
+  --bg-base-primary:    var(--f-bg-1);
+  --bg-base-secondary:  var(--f-bg-0);
+  --bg-base-tertiary:   var(--f-bg-0);
+  --bg-surface-overlay: var(--f-bg-2);
+  --bg-surface-raised:  var(--f-bg-2);
+  --bg-overlay-chat:    var(--f-bg-1);
+  --bg-mod-faint:       rgba(244,244,241,0.03);
+  --bg-mod-subtle:      rgba(244,244,241,0.06);
+  --bg-mod-strong:      rgba(244,244,241,0.10);
+  --bg-mod-active:      rgba(244,244,241,0.12);
+  --border-faint:       var(--f-hairline);
+  --border-subtle:      var(--f-hairline);
+  --border-strong:      rgba(244,244,241,0.24);
+
+  /* text */
+  --text-normal:      var(--f-paper);
+  --text-default:     var(--f-paper);
+  --text-secondary:   rgba(244,244,241,0.70);
+  --text-muted:       rgba(244,244,241,0.50);
+  --text-feedback-muted: rgba(244,244,241,0.50);
+  --text-link:        var(--f-slate);
+  --text-link-low-saturation: var(--f-slate);
+  --text-brand:       var(--f-paper);
+  --header-primary:   var(--f-paper);
+  --header-secondary: rgba(244,244,241,0.60);
+  --channels-default: rgba(244,244,241,0.55);
+  --channel-icon:     rgba(244,244,241,0.40);
+  --interactive-normal: rgba(244,244,241,0.65);
+  --interactive-hover:  var(--f-paper);
+  --interactive-active: var(--f-paper);
+  --interactive-muted:  rgba(244,244,241,0.25);
+
+  /* brand: the identity is monochrome, so chrome is ink, not blurple */
+  --brand-experiment:     var(--f-ink-55);
+  --brand-500:            var(--f-ink-55);
+  --brand-experiment-100: var(--f-bg-2);
+  --brand-experiment-160: var(--f-bg-3);
+  --brand-experiment-200: var(--f-bg-3);
+  --brand-experiment-300: var(--f-ink-80);
+  --brand-experiment-360: var(--f-ink-80);
+  --brand-experiment-400: var(--f-ink-55);
+  --brand-experiment-500: var(--f-ink-55);
+  --brand-experiment-560: var(--f-ink-35);
+  --brand-experiment-600: var(--f-ink-35);
+  --brand-experiment-700: var(--f-ink-35);
+  --brand-experiment-800: var(--f-rule);
+  --brand-experiment-900: var(--f-paper);
+  --brand-experiment-05a: rgba(244,244,241,0.05);
+  --brand-experiment-10a: rgba(244,244,241,0.10);
+  --brand-experiment-15a: rgba(244,244,241,0.15);
+  --brand-experiment-20a: rgba(244,244,241,0.20);
+  --mention-foreground: var(--f-paper);
+  --mention-background: rgba(244,244,241,0.08);
+  --focus-primary: var(--f-slate);
+
+  /* state — the only place colour is allowed */
+  --status-positive:      var(--f-moss);
+  --status-positive-text: var(--f-moss);
+  --status-positive-background: transparent;
+  --status-warning:       var(--f-ochre);
+  --status-warning-text:  var(--f-ochre);
+  --status-warning-background: transparent;
+  --status-danger:        var(--f-clay);
+  --status-danger-text:   var(--f-clay);
+  --status-danger-background: transparent;
+  --text-positive: var(--f-moss);
+  --text-warning:  var(--f-ochre);
+  --text-danger:   var(--f-clay);
+  --info-positive-foreground: var(--f-moss);
+  --info-warning-foreground:  var(--f-ochre);
+  --info-danger-foreground:   var(--f-clay);
+  --info-help-foreground:     var(--f-slate);
+  --button-danger-background:   var(--f-clay);
+  --button-positive-background: var(--f-moss);
+  --green-360: var(--f-moss);
+  --red-400:   var(--f-clay);
+  --yellow-300: var(--f-ochre);
+
+  /* scrollbars */
+  --scrollbar-thin-thumb:  rgba(244,244,241,0.18);
+  --scrollbar-thin-track:  transparent;
+  --scrollbar-auto-thumb:  rgba(244,244,241,0.18);
+  --scrollbar-auto-track:  transparent;
+  --scrollbar-auto-scrollbar-color-thumb: rgba(244,244,241,0.18);
+  --scrollbar-auto-scrollbar-color-track: transparent;
+}
+
+/* ---- body copy is Public Sans Light, as specified ------------------ */
+[class*="messageContent"] {
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ---- mono for every label, timestamp, tag and code ----------------- */
+[class*="timestamp"],
+[class*="channelName"],
+[class*="headerText"],
+[class*="unread"],
+code, pre {
+  font-family: var(--font-code);
+}
+[class*="timestamp"] {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: rgba(244,244,241,0.40);
+}
+
+/* ---- category headers: mono, uppercase, 0.14em tracking ------------ */
+h3[class*="container"] [class*="name"],
+[class*="categoryHeader"] {
+  font-family: var(--font-code) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase;
+  font-weight: 400 !important;
+}
+
+/* ---- hairlines instead of fills and shadows ------------------------ */
+[class*="scroller"] [class*="divider"],
+[class*="divider"]::before {
+  border-color: var(--f-hairline) !important;
+}
+[class*="chat_"], [class*="content_"] > [class*="sidebar"] {
+  box-shadow: none;
+}
+
+/* ---- the sidebar / chat seam is a 1px rule, not a colour step ------ */
+[class*="sidebar_"]    { border-right: 1px solid var(--f-hairline); }
+[class*="guilds_"]     { border-right: 1px solid var(--f-hairline); }
+[class*="membersWrap"] { border-left: 1px solid var(--f-hairline); }
+[class*="title_"][class*="container"] {
+  border-bottom: 1px solid var(--f-hairline);
+  box-shadow: none;
+}
+
+/* ---- server pills: square, paper, no blurple squircle -------------- */
+[class*="pill"] [class*="item"] {
+  border-radius: 0 !important;
+  background: var(--f-paper) !important;
+}
+[class*="wrapper_"] [class*="childWrapper"] { border-radius: 0 !important; }
+
+/* ---- alerts carry colour on a 2px rule only, never a tinted fill --- */
+[class*="mentioned_"] {
+  background: transparent !important;
+  border-left: 2px solid var(--f-ochre);
+}
+[class*="mentioned_"]::before { background: transparent !important; }
+blockquote [class*="divider"], blockquote > div:first-child {
+  background: var(--f-ink-35) !important;
+  border-radius: 0 !important;
+}
+
+/* ---- code blocks: hairline box, no radius -------------------------- */
+code, pre, [class*="markup"] code {
+  background: var(--f-bg-0) !important;
+  border: 1px solid var(--f-hairline) !important;
+  border-radius: 0 !important;
+  color: var(--f-paper);
+}
+
+/* ---- inputs and buttons: hairline boxes ---------------------------- */
+[class*="channelTextArea"] {
+  border: 1px solid var(--f-hairline);
+  background: var(--f-bg-2);
+}
+button[class*="lookFilled"] { border: 1px solid var(--f-hairline); }
+
+/* ---- links get slate, per the signal palette ----------------------- */
+a, [class*="anchor"] { color: var(--f-slate); }

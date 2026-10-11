@@ -1,0 +1,74 @@
+/* Every colour, face and measure the Settings UI uses. Ink and paper carry
+   everything; the four signal hues mark state and never colour text. */
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../fonts/JetBrainsMono-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Pixelify Sans";
+  font-weight: 500;
+  src: url("../fonts/PixelifySans-Medium.woff2") format("woff2");
+}
+
+/* Pixelify's own digits read as letters, so 0-9 come from this face and
+   every other glyph falls through to Pixelify. */
+@font-face {
+  font-family: "Pixel Digits";
+  font-weight: 500;
+  src: url("../fonts/pixel-digits.woff2") format("woff2");
+  unicode-range: U+0030-0039;
+}
+
+:root {
+  color-scheme: light dark;
+
+  --paper: #f4f4f1;
+  --ink: #101211;
+  --soft: #6b6e6c;
+  --rule: #e3e3df;
+  --moss: #55755c;
+  --slate: #4e6e8a;
+  --ochre: #94762e;
+  --clay: #a0564a;
+  /* Brand art is drawn in ink on nothing. */
+  --art: none;
+
+  --font-body: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "Pixel Digits", "Pixelify Sans", var(--font-body);
+
+  /* One cell of the grid. Body type is sized so a character is one cell
+     wide and a line is two cells tall. */
+  --cell: 8px;
+  --line: 2px;
+
+  /* Motion is stepped, and every duration is a multiple of one step. */
+  --step: 80ms;
+  --play: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --step: 0ms;
+  }
+}
+
+/* Set by the page while its window is hidden or minimised. */
+:root.hidden {
+  --play: paused;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #101211;
+    --ink: #f4f4f1;
+    --soft: #a8aaa7;
+    --rule: #2e312f;
+    --moss: #8faf95;
+    --slate: #86a6c2;
+    --ochre: #c9a85f;
+    --clay: #c98879;
+    --art: invert(1);
+  }
+}
