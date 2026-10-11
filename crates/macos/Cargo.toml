@@ -3,5 +3,63 @@ name = "views-macos"
 version.workspace = true
 edition.workspace = true
 
-[dependencies]
+[target.'cfg(target_os = "macos")'.dependencies]
+views-core.workspace = true
 views-platform.workspace = true
+block2 = { version = "0.6", default-features = false, features = ["std"] }
+dispatch2 = { version = "0.3", default-features = false, features = ["std", "objc2"] }
+objc2 = "0.6"
+objc2-app-kit = { version = "0.3", default-features = false, features = [
+    "std",
+    "libc",
+    "objc2-core-foundation",
+    "NSApplication",
+    "NSButton",
+    "NSCell",
+    "NSControl",
+    "NSGraphics",
+    "NSImage",
+    "NSMenu",
+    "NSMenuItem",
+    "NSResponder",
+    "NSRunningApplication",
+    "NSScreen",
+    "NSStatusBar",
+    "NSStatusBarButton",
+    "NSStatusItem",
+    "NSView",
+    "NSWorkspace",
+] }
+objc2-application-services = { version = "0.3", default-features = false, features = [
+    "std",
+    "libc",
+    "HIServices",
+    "AXError",
+    "AXUIElement",
+    "AXValue",
+] }
+objc2-core-foundation = { version = "0.3", default-features = false, features = [
+    "std",
+    "CFArray",
+    "CFCGTypes",
+    "CFDictionary",
+    "CFNumber",
+    "CFRunLoop",
+    "CFString",
+    "CFUUID",
+] }
+objc2-foundation = { version = "0.3", default-features = false, features = [
+    "std",
+    "block2",
+    "NSArray",
+    "NSDictionary",
+    "NSDistributedNotificationCenter",
+    "NSEnumerator",
+    "NSGeometry",
+    "NSNotification",
+    "NSOperation",
+    "NSString",
+    "NSTimer",
+    "NSURL",
+    "NSValue",
+] }
