@@ -9,7 +9,8 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
 use tauri::{Manager, Webview, WindowEvent};
-use views_core::Config;
+use views_core::{Config, Monitor};
+use views_platform::Desktop;
 
 #[cfg(target_os = "macos")]
 use views_macos as os;
@@ -35,7 +36,13 @@ fn main() {
                     if window.is_minimized().unwrap_or(false) { page.hide() } else { page.show() };
             }
         })
-        .invoke_handler(tauri::generate_handler![config_path, version, load_config, save_config])
+        .invoke_handler(tauri::generate_handler![
+            config_path,
+            version,
+            load_config,
+            save_config,
+            monitors
+        ])
         .run(tauri::generate_context!())
         .expect("the Settings UI could not start");
 }
@@ -69,6 +76,12 @@ fn save_config(config: Config) -> Result<bool, String> {
     let path = os::config_path();
     replace(&path, &config.to_string()).map_err(|error| at(&path, error))?;
     Ok(os::request_reload())
+}
+
+/// The attached Monitors.
+#[tauri::command]
+fn monitors() -> Vec<Monitor> {
+    os::Desktop.monitors()
 }
 
 /// Puts `text` at `path` in one step, so no reader ever sees half a file.

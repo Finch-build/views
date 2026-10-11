@@ -1,4 +1,6 @@
 import { general } from "./screens/general";
+import { layouts } from "./screens/layouts";
+import { monitors } from "./screens/monitors";
 
 export interface Screen {
   /** As it reads in the navigation. */
@@ -8,4 +10,4 @@ export interface Screen {
 }
 
 /** Every screen, in navigation order. */
-export const screens: readonly Screen[] = [general];
+export const screens: readonly Screen[] = [general, monitors, layouts];

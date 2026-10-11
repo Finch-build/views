@@ -4031,6 +4031,7 @@ dependencies = [
  "tauri-plugin-single-instance",
  "views-core",
  "views-macos",
+ "views-platform",
  "views-windows",
 ]
 

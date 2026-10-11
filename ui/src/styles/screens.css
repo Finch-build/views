@@ -30,3 +30,141 @@
   overflow-wrap: anywhere;
   user-select: text;
 }
+
+/* monitors */
+
+/* Drawn to scale. Frames reach half a line past their edges, so that Monitors
+   which touch share one line instead of drawing two. */
+.map {
+  position: relative;
+  width: min(100%, calc(var(--aspect) * 40 * var(--cell)));
+  aspect-ratio: var(--aspect);
+  margin: var(--cell) 0;
+}
+
+.monitor {
+  position: absolute;
+  left: calc(var(--x) * 100% - var(--line) / 2);
+  top: calc(var(--y) * 100% - var(--line) / 2);
+  width: calc(var(--w) * 100% + var(--line));
+  height: calc(var(--h) * 100% + var(--line));
+  display: grid;
+  align-content: start;
+  gap: var(--cell);
+  padding: var(--cell);
+  overflow: hidden;
+  border: var(--line) solid var(--ink);
+  background: var(--paper);
+}
+
+.monitor > p {
+  color: var(--soft);
+}
+
+.monitor .text::placeholder {
+  color: var(--soft);
+  opacity: 1;
+}
+
+/* layouts */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cell);
+}
+
+.button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.text[aria-invalid="true"] {
+  border-style: dashed;
+  border-color: var(--clay);
+}
+
+.stage {
+  align-items: start;
+}
+
+/* The Layout on the fine grid, at the aspect of a Monitor. Cells show where an
+   edge can fall. Zones reach half a line past theirs, as Monitors do. */
+.zones {
+  --aspect: 1.7778;
+  display: grid;
+  grid-template: repeat(var(--rows), 1fr) / repeat(var(--columns), 1fr);
+  width: min(100%, calc(var(--aspect) * 40 * var(--cell)));
+  aspect-ratio: var(--aspect);
+}
+
+.cell {
+  border: calc(var(--line) / 2) solid var(--rule);
+}
+
+.zone {
+  margin: calc(var(--line) / -2);
+  border: var(--line) solid var(--ink);
+  cursor: text;
+}
+
+.zone.picked > input {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.zone:has(> input:focus-visible) {
+  z-index: 1;
+  outline: var(--line) solid var(--slate);
+  outline-offset: var(--line);
+}
+
+.zone > input {
+  width: 100%;
+  height: calc(4 * var(--cell));
+  padding: 0 var(--cell);
+  border: 0;
+  background: none;
+  text-overflow: ellipsis;
+  outline: 0;
+}
+
+.zone > input[aria-invalid="true"] {
+  text-decoration: underline dashed var(--clay);
+}
+
+/* A hit area across the edge it moves, with a grip at its middle. */
+.divider {
+  display: grid;
+  place-items: center;
+}
+
+.divider.x {
+  justify-self: start;
+  width: calc(2 * var(--cell));
+  margin-left: calc(-1 * var(--cell));
+  cursor: col-resize;
+}
+
+.divider.y {
+  align-self: start;
+  height: calc(2 * var(--cell));
+  margin-top: calc(-1 * var(--cell));
+  cursor: row-resize;
+}
+
+.divider::before {
+  content: "";
+  background: var(--ink);
+  outline: var(--line) solid var(--paper);
+}
+
+.divider.x::before {
+  width: var(--cell);
+  height: calc(3 * var(--cell));
+}
+
+.divider.y::before {
+  width: calc(3 * var(--cell));
+  height: var(--cell);
+}
