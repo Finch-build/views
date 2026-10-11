@@ -1,29 +1,12 @@
-//! Engine-independent logic: config, Zone geometry, Rule matching.
-//!
-//! Nothing in here touches an OS, so the crate compiles on any target.
-//! Ticket 02 fills in config parsing, Zone -> pixel rectangle, and Rule matching.
+//! The logic that needs no operating system: the config, Zone geometry and Rule matching.
 
-/// A pixel rectangle in a Monitor's work area.
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Rect {
-    pub x: i32,
-    pub y: i32,
-    pub width: u32,
-    pub height: u32,
-}
+mod config;
+mod geometry;
+mod placement;
 
-#[cfg(test)]
-mod tests {
-    use super::Rect;
+pub use config::{Config, ConfigError, Gaming, Layout, MonitorName, Rule, Zone};
+pub use geometry::Rect;
+pub use placement::{Monitor, Window};
 
-    #[test]
-    fn rect_measures_its_pixels() {
-        let rect = Rect {
-            x: 0,
-            y: 0,
-            width: 3,
-            height: 4,
-        };
-        assert_eq!(rect.width * rect.height, 12);
-    }
-}
+/// The application's name, as it appears in paths and in the tray.
+pub const NAME: &str = "views";

@@ -1,13 +1,12 @@
 [workspace]
-resolver = "2"
-members = [
-    "crates/core",
-    "crates/platform",
-    "crates/windows",
-    "crates/macos",
-    "crates/engine",
-    "crates/ipc",
-]
+resolver = "3"
+members = ["crates/*"]
+# The Settings UI is its own workspace, so nothing it depends on can reach the Engine.
+exclude = ["ui/src-tauri"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
 
 [workspace.dependencies]
 views-core = { path = "crates/core" }
@@ -15,11 +14,10 @@ views-platform = { path = "crates/platform" }
 views-windows = { path = "crates/windows" }
 views-macos = { path = "crates/macos" }
 
-# Shared release profile: the engine has a binary-size budget (ticket 04), so
-# every crate in the workspace inherits the same size-optimised settings.
-# Cargo only reads profiles from the workspace root, so this is the whole story.
+# The Engine has a 1 MB binary budget, so release builds optimise for size.
 [profile.release]
 opt-level = "z"
 lto = true
 codegen-units = 1
+panic = "abort"
 strip = true

@@ -1,10 +1,18 @@
 [package]
 name = "views-engine"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "views"
+path = "src/main.rs"
 
 [dependencies]
-views-platform = { workspace = true }
-views-windows = { workspace = true }
-views-macos = { workspace = true }
+views-core.workspace = true
+views-platform.workspace = true
 
+[target.'cfg(windows)'.dependencies]
+views-windows.workspace = true
+
+[target.'cfg(target_os = "macos")'.dependencies]
+views-macos.workspace = true
