@@ -65,11 +65,11 @@ Zones are whole cells, so two Zones that share a grid line share a pixel edge on
 
 ## What it costs
 
-Measured on Windows 11, release build, GNU toolchain. Shipping builds use MSVC and have not been measured.
+Measured on Windows 11 with a release build. The binary size is the MSVC build that ships; the rest were taken on a GNU-toolchain build.
 
 | | Budget | Measured |
 |---|---|---|
-| Engine binary | under 1 MB | 533 KB |
+| Engine binary | under 1 MB | 397 KB |
 | Threads | 1 | 1 |
 | Private working set, idle | under 3 MB | 1.2 to 1.7 MB |
 | Working set in Gaming mode | under 1 MB | 0.5 MB |

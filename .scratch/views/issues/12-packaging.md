@@ -16,3 +16,5 @@
 - **The open box: the installer builds but has not been run.** Installing on the development machine was not permitted to the agent. To close it, run the setup exe as a standard user, check that views appears in the Start menu and the tray, turn autostart on, uninstall, and check that the install directory and the `views` value under the Run key are gone.
 - **macOS.** The same command on a Mac produces `views.app`; signing and notarization are in `docs/macos.md`. The Release workflow builds both.
 - **Budgets** are in the README: Engine 533 KB, one thread, 1.2 to 1.7 MB private working set idle, 0.5 MB in Gaming mode, no idle wakeups, 4 to 13 ms from shown to moved. All from the GNU toolchain; MSVC is unmeasured.
+
+The Release workflow passed on both runners (run 38183517191). Its MSVC Engine is 406,528 bytes and the installer 2.7 MB; `views.app` builds, with a 492 KB Engine. Memory, wakeups and latency remain GNU-build measurements.
