@@ -82,7 +82,7 @@ pub enum Event {
     ForegroundChanged(WindowId),
     /// The process registered with [`Host::watch_exit`] exited.
     GameExited,
-    /// Monitors were attached, detached, rearranged or resized.
+    /// Monitors were attached, detached, rearranged or resized, or a work area changed.
     DisplaysChanged,
     /// The Settings UI saved a new config.
     ReloadRequested,

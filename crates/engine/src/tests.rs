@@ -203,7 +203,7 @@ fn a_new_window_is_placed_and_an_unruled_one_ignored() {
 }
 
 #[test]
-fn a_window_titled_late_is_placed_on_its_one_retry() {
+fn a_window_titled_late_is_placed_on_a_retry() {
     let world = World::new();
     let (mut engine, mut tray) = world.engine();
 
@@ -212,13 +212,29 @@ fn a_window_titled_late_is_placed_on_its_one_retry() {
     assert_eq!(world.placed(), []);
     assert_eq!(tray.deferred(), [(NOTES, RETRY_DELAY)]);
 
-    let _ = engine.handle(&mut tray, Event::Deferred(NOTES));
-    assert_eq!(world.placed(), [], "still untitled");
-    assert_eq!(tray.deferred(), [], "there is no second retry");
-
     world.retitle(NOTES, "Notes");
     let _ = engine.handle(&mut tray, Event::Deferred(NOTES));
     assert_eq!(world.placed(), [(NOTES, LEFT)]);
+    assert_eq!(tray.deferred(), []);
+}
+
+#[test]
+fn retries_wait_twice_as_long_each_time_and_then_stop() {
+    let world = World::new();
+    let (mut engine, mut tray) = world.engine();
+
+    world.open(NOTES, "notes.exe", "");
+    let _ = engine.handle(&mut tray, Event::WindowCreated(NOTES));
+    let mut delays = Vec::new();
+    while let [(_, delay)] = tray.deferred()[..] {
+        delays.push(delay.as_millis());
+        let _ = engine.handle(&mut tray, Event::Deferred(NOTES));
+    }
+    assert_eq!(delays, [200, 400, 800, 1600]);
+
+    world.retitle(NOTES, "Notes");
+    let _ = engine.handle(&mut tray, Event::Deferred(NOTES));
+    assert_eq!(world.placed(), [], "a delay the Engine did not ask for is ignored");
 }
 
 #[test]

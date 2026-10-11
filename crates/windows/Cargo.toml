@@ -3,5 +3,16 @@ name = "views-windows"
 version.workspace = true
 edition.workspace = true
 
-[dependencies]
+[target.'cfg(windows)'.dependencies]
+views-core.workspace = true
 views-platform.workspace = true
+windows = { version = "0.62", features = [
+    "Win32_Graphics_Dwm",
+    "Win32_Graphics_Gdi",
+    "Win32_Security",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Threading",
+    "Win32_UI_Accessibility",
+    "Win32_UI_Shell",
+    "Win32_UI_WindowsAndMessaging",
+] }

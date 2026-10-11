@@ -14,9 +14,13 @@ use views_platform::{Command, Desktop, Event, Host, Interest, Override, Status, 
 #[cfg(test)]
 mod tests;
 
-/// How long a new window gets to become one that a Rule can match. Apps often create
-/// a window before they title it or show it.
+/// How long a new window gets to become one that a Rule can match before the Engine
+/// looks again. Apps often create a window before they title it or show it.
 const RETRY_DELAY: Duration = Duration::from_millis(200);
+
+/// How many times the Engine looks again, waiting twice as long each time: three
+/// seconds in all, which covers the slowest starters, UWP apps.
+const RETRIES: u32 = 4;
 
 /// Runs an Engine on `host` until the user quits or the session ends.
 ///
@@ -43,8 +47,8 @@ struct Engine<D, R> {
     gaming: Override,
     /// A game was detected and its process has not exited.
     game_running: bool,
-    /// Windows whose pending [`Event::Deferred`] is a Rule's reapply, not a retry.
-    reapplying: Vec<WindowId>,
+    /// The windows with an [`Event::Deferred`] on its way, and the look each is due.
+    pending: Vec<(WindowId, Look)>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -65,10 +69,11 @@ enum Arranged {
 }
 
 /// Why the Engine is looking at a window.
-#[derive(PartialEq, Eq)]
+#[derive(Clone, Copy)]
 enum Look {
-    Created,
-    Retry,
+    /// To match it to a Rule, having already retried this many times.
+    Attempt(u32),
+    /// To place it once more, as its Rule asked.
     Reapply,
 }
 
@@ -84,18 +89,17 @@ impl<D: Desktop, R: Fn() -> io::Result<String>> Engine<D, R> {
             paused: false,
             gaming: Override::Auto,
             game_running: false,
-            reapplying: Vec::new(),
+            pending: Vec::new(),
         }
     }
 
     fn handle(&mut self, host: &mut impl Host, event: Event) -> ControlFlow<()> {
         match event {
-            Event::WindowCreated(window) => self.look(host, window, Look::Created),
+            Event::WindowCreated(window) => self.look(host, window, Look::Attempt(0)),
             Event::Deferred(window) => {
-                let pending = self.reapplying.len();
-                self.reapplying.retain(|&reapplying| reapplying != window);
-                let reapply = self.reapplying.len() < pending;
-                self.look(host, window, if reapply { Look::Reapply } else { Look::Retry });
+                if let Some(look) = self.take_pending(window) {
+                    self.look(host, window, look);
+                }
             }
             Event::ForegroundChanged(window) => self.detect_game(host, window),
             Event::GameExited => {
@@ -211,20 +215,30 @@ impl<D: Desktop, R: Fn() -> io::Result<String>> Engine<D, R> {
         }
     }
 
-    /// Places `window`, then schedules whichever second look it has earned: a retry
-    /// if a new window could not be matched yet, a reapply if its Rule asks for one.
+    /// Places `window`, then schedules whichever further look it has earned: a retry
+    /// if no Rule could match it yet, a reapply if the Rule that placed it asks for one.
     fn look(&mut self, host: &mut impl Host, window: WindowId, look: Look) {
         if self.mode != Mode::Normal {
             return;
         }
-        match self.arrange(window) {
-            Arranged::Placed { again_after } if look != Look::Reapply && !again_after.is_zero() => {
-                self.reapplying.push(window);
-                host.defer(window, again_after);
+        let (next, delay) = match (self.arrange(window), look) {
+            (Arranged::Placed { again_after }, Look::Attempt(_)) if !again_after.is_zero() => {
+                (Look::Reapply, again_after)
             }
-            Arranged::NotYet if look == Look::Created => host.defer(window, RETRY_DELAY),
-            _ => {}
-        }
+            (Arranged::NotYet, Look::Attempt(retries)) if retries < RETRIES => {
+                (Look::Attempt(retries + 1), RETRY_DELAY * 2u32.pow(retries))
+            }
+            _ => return,
+        };
+        // A window can be announced twice; its newer deferral replaces the older.
+        self.take_pending(window);
+        self.pending.push((window, next));
+        host.defer(window, delay);
+    }
+
+    fn take_pending(&mut self, window: WindowId) -> Option<Look> {
+        let index = self.pending.iter().position(|(pending, _)| *pending == window)?;
+        Some(self.pending.swap_remove(index).1)
     }
 
     /// Moves `window` to the Zone its Rule assigns, if it has one and is Tileable.

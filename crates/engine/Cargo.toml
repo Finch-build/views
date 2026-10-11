@@ -16,3 +16,6 @@ views-windows.workspace = true
 
 [target.'cfg(target_os = "macos")'.dependencies]
 views-macos.workspace = true
+
+[build-dependencies]
+embed-manifest = "1"
