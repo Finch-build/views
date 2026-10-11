@@ -32,3 +32,38 @@ export const saveConfig = (config: Config) => invoke<boolean>("save_config", { c
 
 /** The attached Monitors, in pixels of the desktop's own coordinate space. */
 export const monitors = () => invoke<Monitor[]>("monitors");
+
+/** The small icon of an executable: `width` × `height` pixels, four bytes each, red first. */
+export interface Icon {
+  width: number;
+  height: number;
+  rgba: number[];
+}
+
+/** An app with a Tileable window, as one of its windows describes it. */
+export interface App {
+  exe: string;
+  class: string;
+  title: string;
+  /** Absent where the platform has no icons. */
+  icon: Icon | null;
+}
+
+/** The apps with a Tileable window now, one each. */
+export const runningApps = () => invoke<App[]>("running_apps");
+
+/** The file name of an executable the user picks, or null if they cancel. */
+export const browse = () => invoke<string | null>("browse");
+
+/** What this platform has: a screen or control for what it lacks is not shown. */
+export interface Features {
+  gaming: boolean;
+  autostart: boolean;
+}
+
+export const features = () => invoke<Features>("features");
+
+/** Whether the Engine starts when the user signs in. */
+export const autostart = () => invoke<boolean>("autostart");
+
+export const setAutostart = (on: boolean) => invoke<void>("set_autostart", { on });

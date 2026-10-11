@@ -1,9 +1,9 @@
 import mark from "../../design/brand/finch-mark.png";
 import wordmark from "../../design/brand/finch-wordmark.png";
-import { configPath, version } from "../commands";
+import { autostart, configPath, features, setAutostart, version } from "../commands";
 import { h } from "../dom";
 import type { Screen } from "../screens";
-import { panel, row } from "../ui";
+import { panel, row, status, toggle } from "../ui";
 
 export const general: Screen = {
   name: "General",
@@ -14,6 +14,7 @@ export const general: Screen = {
     void version().then((found) => (release.textContent = found));
     return [
       panel("Config file", row("Location", path)),
+      startup(),
       panel(
         "About",
         h(
@@ -33,3 +34,35 @@ export const general: Screen = {
     ];
   },
 };
+
+/** The sign-in toggle. It shows the system's state, not the config's, and changes it at once. Absent where there is no autostart. */
+function startup(): HTMLElement {
+  const body = h("div");
+  const shown = panel("Startup", body);
+  shown.hidden = true;
+
+  async function draw(problem = ""): Promise<void> {
+    try {
+      const on = await autostart();
+      body.replaceChildren(
+        row("Sign-in", toggle("Start the Engine when I sign in", on, (now) => void change(now))),
+        ...(problem ? [status("bad", problem)] : []),
+      );
+    } catch (reason) {
+      body.replaceChildren(status("bad", String(reason)));
+    }
+    shown.hidden = false;
+  }
+
+  async function change(on: boolean): Promise<void> {
+    try {
+      await setAutostart(on);
+    } catch (reason) {
+      await draw(String(reason));
+      body.querySelector("input")?.focus();
+    }
+  }
+
+  void features().then(({ autostart: present }) => (present ? draw() : undefined));
+  return shown;
+}

@@ -4,13 +4,20 @@
 
 #![windows_subsystem = "windows"]
 
+use std::collections::HashSet;
 use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
-use tauri::{Manager, Webview, WindowEvent};
+use serde::Serialize;
+use tauri::{Manager, Webview, WebviewWindow, WindowEvent};
+use tauri_plugin_dialog::DialogExt;
 use views_core::{Config, Monitor};
 use views_platform::Desktop;
+
+#[cfg(windows)]
+mod autostart;
+mod icons;
 
 #[cfg(target_os = "macos")]
 use views_macos as os;
@@ -26,6 +33,7 @@ fn main() {
                 let _ = window.set_focus();
             }
         }))
+        .plugin(tauri_plugin_dialog::init())
         .on_window_event(|window, event| {
             // A minimised window's page is not told it is hidden, and would go on animating.
             if let WindowEvent::Resized(_) = event
@@ -41,7 +49,14 @@ fn main() {
             version,
             load_config,
             save_config,
-            monitors
+            features,
+            #[cfg(windows)]
+            autostart::autostart,
+            #[cfg(windows)]
+            autostart::set_autostart,
+            monitors,
+            running_apps,
+            browse
         ])
         .run(tauri::generate_context!())
         .expect("the Settings UI could not start");
@@ -55,6 +70,18 @@ fn config_path() -> PathBuf {
 #[tauri::command]
 fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
+}
+
+/// What this platform has, so that the page shows only what works.
+#[derive(Serialize)]
+struct Features {
+    gaming: bool,
+    autostart: bool,
+}
+
+#[tauri::command]
+fn features() -> Features {
+    Features { gaming: cfg!(windows), autostart: cfg!(windows) }
 }
 
 /// The config on disk, or an empty one if there is no file yet.
@@ -82,6 +109,44 @@ fn save_config(config: Config) -> Result<bool, String> {
 #[tauri::command]
 fn monitors() -> Vec<Monitor> {
     os::Desktop.monitors()
+}
+
+/// An app with a Tileable window, as the picker lists it.
+#[derive(Serialize)]
+struct App {
+    exe: String,
+    class: String,
+    title: String,
+    icon: Option<icons::Icon>,
+}
+
+/// The apps that have a Tileable window now, one each, in the order of their file names.
+#[tauri::command]
+async fn running_apps() -> Vec<App> {
+    let desktop = os::Desktop;
+    let mut seen = HashSet::new();
+    let mut apps: Vec<App> = desktop
+        .windows()
+        .into_iter()
+        .filter(|&window| desktop.is_tileable(window))
+        .filter_map(|window| desktop.window(window))
+        .filter(|window| seen.insert(window.exe.to_lowercase()))
+        .map(|window| App {
+            icon: icons::of(&window.path),
+            exe: window.exe,
+            class: window.class,
+            title: window.title,
+        })
+        .collect();
+    apps.sort_by_key(|app| app.exe.to_lowercase());
+    apps
+}
+
+/// The file name of the executable the user chooses, or nothing if they cancel.
+#[tauri::command]
+async fn browse(window: WebviewWindow) -> Option<String> {
+    let file = window.dialog().file().set_parent(&window).blocking_pick_file()?;
+    Some(file.into_path().ok()?.file_name()?.to_string_lossy().into_owned())
 }
 
 /// Puts `text` at `path` in one step, so no reader ever sees half a file.

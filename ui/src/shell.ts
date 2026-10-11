@@ -1,12 +1,14 @@
 // The frame around every screen: title, navigation and the save bar.
 
+import type { Features } from "./commands";
 import { h } from "./dom";
-import { screens, type Screen } from "./screens";
+import { screens as every, type Screen } from "./screens";
 import { dirty, engineHeard, error, load, ready, revert, save, subscribe } from "./store";
 import { drawTitle } from "./title";
 import { button, panel, status, type Signal } from "./ui";
 
-export function shell(): void {
+export function shell(available: Features): void {
+  const screens = every.filter((screen) => !screen.requires || available[screen.requires]);
   let current = screens[0]!;
   const tabs = screens.map((screen) =>
     h("button", { className: "tab", type: "button", onclick: () => show(screen) }, screen.name),
