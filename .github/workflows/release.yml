@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  bundle:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - run: npm ci
+      - run: npm run bundle
+      # An .app is a directory, and an artifact does not keep its executable bits.
+      - if: runner.os == 'macOS'
+        run: tar -czf views.app.tar.gz -C src-tauri/target/release/bundle/macos views.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: views-${{ runner.os }}
+          if-no-files-found: error
+          path: |
+            ui/src-tauri/target/release/bundle/nsis/*-setup.exe
+            ui/views.app.tar.gz
+            ui/src-tauri/binaries/

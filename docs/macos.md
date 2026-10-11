@@ -16,3 +16,14 @@ The Engine names a window by its app's process id and its CoreGraphics window nu
 Coordinates are points, with the origin at the top left of the primary display. A Monitor's id is its display UUID.
 
 The config is `~/Library/Application Support/views/config.toml`. The Settings UI is the `views-settings` executable beside the Engine's.
+
+## Distributing
+
+`npm run bundle` in `ui`, on a Mac, produces `views.app`. The Settings UI is its main executable and the Engine is `Contents/MacOS/views` beside it; opening the app starts both.
+
+The bundle is unsigned unless told otherwise. To give it to anyone else:
+
+- **Sign** with a Developer ID Application certificate. Set `APPLE_SIGNING_IDENTITY` to the certificate's name before bundling and Tauri signs the app and both executables, with the hardened runtime that notarization requires.
+- **Notarize.** With `APPLE_ID`, `APPLE_PASSWORD` (an app-specific password) and `APPLE_TEAM_ID` also set, Tauri submits the signed app to Apple and staples the ticket to it. Without that, Gatekeeper blocks the app on other Macs.
+
+A stable signature is also what lets the Accessibility grant survive an update.

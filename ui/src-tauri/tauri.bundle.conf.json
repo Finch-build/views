@@ -1,0 +1,10 @@
+{
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "app"],
+    "externalBin": ["binaries/views"],
+    "windows": {
+      "nsis": { "installMode": "currentUser", "installerHooks": "installer.nsh" }
+    }
+  }
+}

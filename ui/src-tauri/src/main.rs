@@ -5,9 +5,11 @@
 #![windows_subsystem = "windows"]
 
 use std::collections::HashSet;
+use std::env::{self, consts::EXE_SUFFIX};
 use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 use serde::Serialize;
 use tauri::{Manager, Webview, WebviewWindow, WindowEvent};
@@ -25,6 +27,7 @@ use views_macos as os;
 use views_windows as os;
 
 fn main() {
+    start_engine();
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             // A second launch brings the window of the first to the front.
@@ -60,6 +63,14 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("the Settings UI could not start");
+}
+
+/// Starts the Engine, which sits beside this executable. If one is already running,
+/// the new one exits at once.
+fn start_engine() {
+    if let Ok(settings) = env::current_exe() {
+        let _ = Command::new(settings.with_file_name(format!("views{EXE_SUFFIX}"))).spawn();
+    }
 }
 
 #[tauri::command]

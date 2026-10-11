@@ -20,3 +20,5 @@ Written in `crates/macos`, with the limits in `docs/macos.md`. **It has never ru
 4. Quit calls `NSApp.stop`; if the loop does not return, use `terminate:`.
 
 On macOS a Rule's `exe` is the executable's file name (`Safari`). The menu-bar item has Open settings, Pause and Quit; there is no Gaming mode.
+
+CI builds, links, lints and tests it on `macos-latest` (run 38182585922), so it is known to build. It is still not known to work.
