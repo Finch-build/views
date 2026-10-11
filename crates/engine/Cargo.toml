@@ -1,0 +1,10 @@
+[package]
+name = "views-engine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+views-platform = { workspace = true }
+views-windows = { workspace = true }
+views-macos = { workspace = true }
+

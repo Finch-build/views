@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/core",
+    "crates/platform",
+    "crates/windows",
+    "crates/macos",
+    "crates/engine",
+    "crates/ipc",
+]
+
+[workspace.dependencies]
+views-core = { path = "crates/core" }
+views-platform = { path = "crates/platform" }
+views-windows = { path = "crates/windows" }
+views-macos = { path = "crates/macos" }
+
+# Shared release profile: the engine has a binary-size budget (ticket 04), so
+# every crate in the workspace inherits the same size-optimised settings.
+# Cargo only reads profiles from the workspace root, so this is the whole story.
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
