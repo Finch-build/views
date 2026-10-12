@@ -51,9 +51,11 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
       # Only the Windows installer is published: the unsigned views.app cannot update itself.
       - if: runner.os == 'Windows'
-        run: node release.js ${{ needs.version.outputs.tag }}
+        shell: bash
+        run: node release.js "$TAG"
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}
       # An .app is a directory, and an artifact does not keep its executable bits.
       - if: runner.os == 'macOS'
         run: tar -czf views.app.tar.gz -C src-tauri/target/release/bundle/macos views.app
