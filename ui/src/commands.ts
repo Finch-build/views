@@ -52,6 +52,16 @@ export interface App {
 /** The apps with a Tileable window now, one each. */
 export const runningApps = () => invoke<App[]>("running_apps");
 
+/** One executable of an installed app, under the name the system shows for the app. */
+export interface Installed {
+  name: string;
+  exe: string;
+  icon: Icon | null;
+}
+
+/** The installed apps, by name. Empty where the platform cannot tell. */
+export const installedApps = () => invoke<Installed[]>("installed_apps");
+
 /** The file name of an executable the user picks, or null if they cancel. */
 export const browse = () => invoke<string | null>("browse");
 

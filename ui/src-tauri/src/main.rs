@@ -20,6 +20,7 @@ use views_platform::Desktop;
 #[cfg(windows)]
 mod autostart;
 mod icons;
+mod installed;
 
 #[cfg(target_os = "macos")]
 use views_macos as os;
@@ -59,6 +60,7 @@ fn main() {
             autostart::set_autostart,
             monitors,
             running_apps,
+            installed::installed_apps,
             browse
         ])
         .run(tauri::generate_context!())
