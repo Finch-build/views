@@ -1,10 +1,11 @@
 [package]
 name = "views-settings"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 tauri = { version = "2", features = [] }
 tauri-plugin-dialog = "2"
 tauri-plugin-single-instance = "2"
@@ -16,6 +17,7 @@ views-windows = { path = "../../crates/windows" }
 windows = { version = "0.62", features = [
     "Win32_Graphics_Gdi",
     "Win32_Storage_FileSystem",
+    "Win32_System_Com",
     "Win32_UI_Shell",
     "Win32_UI_WindowsAndMessaging",
 ] }

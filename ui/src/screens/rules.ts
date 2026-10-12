@@ -1,7 +1,8 @@
-import { browse, monitors as attached, runningApps, type App, type Icon, type Monitor } from "../commands";
+import { monitors as attached, type App, type Monitor } from "../commands";
 import type { Rule } from "../config";
 import { h } from "../dom";
 import { dangling } from "../names";
+import { appPicker } from "../picker";
 import { fresh, monitorName, optional, retarget, shadowed, shift, skipped } from "../rules";
 import type { Screen } from "../screens";
 import { config, edit } from "../store";
@@ -24,27 +25,15 @@ function choices(names: readonly string[], current: string): [string, string][] 
   return names.includes(current) ? found : [...found, [current, `${current} (missing)`]];
 }
 
-/** The icon, one canvas pixel to an icon pixel; the page scales it. Empty where there is none. */
-function paint(icon: Icon | null): HTMLElement {
-  const slot = h("span", { className: "icon" });
-  if (icon) {
-    const canvas = h("canvas", { width: icon.width, height: icon.height });
-    canvas.getContext("2d")!.putImageData(new ImageData(Uint8ClampedArray.from(icon.rgba), icon.width), 0, 0);
-    slot.append(canvas);
-  }
-  return slot;
-}
-
 export const rules: Screen = {
   name: "Rules",
   render() {
     let present: Monitor[] = [];
     const list = h("div");
-    const apps = h("div");
-    const picker = panel("Add Rule", apps);
+    const picker = appPicker("Add Rule", add, () => focus("add"));
     const form = h("div");
     const editor = panel("Rule", form);
-    picker.hidden = editor.hidden = true;
+    editor.hidden = true;
 
     void attached().then(
       (found) => {
@@ -120,7 +109,7 @@ export const rules: Screen = {
         }),
       );
       if (!all.length) list.append(status("none", "No Rules."));
-      const add = button("Add Rule", () => void openPicker(), true);
+      const add = button("Add Rule", picker.open, true);
       add.dataset.key = "add";
       add.disabled = why !== "";
       list.append(row("", h("div", { className: "actions" }, add)));
@@ -199,60 +188,18 @@ export const rules: Screen = {
       );
     }
 
-    /** Appends a Rule for `exe` and opens it for editing. `from` is the running app it was picked from. */
+    /** Appends a Rule for `exe` and opens it for editing. `from` is the open window it was picked by. */
     function add(exe: string, from?: App): void {
       const rule = fresh(exe, config(), present);
       edit((c) => c.rule.push(rule));
       editing = rule;
       origin = from && { rule, app: from };
-      picker.hidden = true;
       drawList();
       drawForm();
       focus("monitor");
     }
 
-    function close(): void {
-      picker.hidden = true;
-      focus("add");
-    }
-
-    async function openPicker(): Promise<void> {
-      picker.hidden = false;
-      apps.replaceChildren(status("none", "Looking for windows."));
-      focus("cancel");
-      try {
-        const running = await runningApps();
-        apps.replaceChildren(
-          ...running.map((app, index) => {
-            const pick = button("Add", () => add(app.exe, app));
-            pick.ariaLabel = `Add a Rule for ${app.exe}`;
-            pick.dataset.key = `pick:${index}`;
-            return h(
-              "div",
-              { className: "row app" },
-              paint(app.icon),
-              h("div", {}, h("p", {}, app.exe), h("p", { className: "soft" }, app.title)),
-              pick,
-            );
-          }),
-        );
-        if (!running.length) apps.append(status("none", "No apps have a window to match."));
-        focus("pick:0", "browse");
-      } catch (reason) {
-        apps.replaceChildren(status("bad", String(reason)));
-      }
-    }
-
-    const browseButton = button("Browse", () => void browse().then((exe) => (exe ? add(exe) : focus("browse"))));
-    browseButton.dataset.key = "browse";
-    const cancel = button("Cancel", close);
-    cancel.dataset.key = "cancel";
-    picker.append(row("Not listed", h("div", { className: "actions" }, browseButton)), row("", h("div", { className: "actions" }, cancel)));
-    picker.onkeydown = (event) => {
-      if (event.key === "Escape") close();
-    };
-
     drawList();
-    return [panel("Rules", list), picker, editor];
+    return [panel("Rules", list), picker.panel, editor];
   },
 };

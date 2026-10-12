@@ -188,6 +188,13 @@
   white-space: nowrap;
 }
 
+/* The picker's list scrolls within its panel, so the search stays in view. */
+.apps {
+  max-height: calc(48 * var(--cell));
+  margin-top: var(--cell);
+  overflow-y: auto;
+}
+
 /* An icon is drawn at twice its size, or once where the system gives a large one. */
 .icon {
   display: grid;

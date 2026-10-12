@@ -1,5 +1,6 @@
 import { canAdd, isListed } from "../games";
 import { h } from "../dom";
+import { appPicker } from "../picker";
 import type { Screen } from "../screens";
 import { config, edit } from "../store";
 import { button, panel, row, status, textField, toggle } from "../ui";
@@ -14,6 +15,16 @@ export const gaming: Screen = {
     input.placeholder = "eldenring.exe";
     input.ariaLabel = "Executable file name";
     const add = button("Add", addGame);
+    const find = button("Find", () => picker.open());
+    const picker = appPicker(
+      "Find a game",
+      (exe) => {
+        input.value = exe;
+        check();
+        addGame();
+      },
+      () => find.focus(),
+    );
 
     function check(): void {
       const listed = isListed(config().gaming.games, input.value);
@@ -64,7 +75,8 @@ export const gaming: Screen = {
           toggle("Treat fullscreen Direct3D apps as games", settings.detect_fullscreen, (on) => edit((c) => (c.gaming.detect_fullscreen = on))),
         ),
       ),
-      panel("Games", row("Add", input, add), notice, list),
+      panel("Games", row("Add", input, add, find), notice, list),
+      picker.panel,
     ];
   },
 };
