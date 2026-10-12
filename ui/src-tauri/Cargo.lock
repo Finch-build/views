@@ -4441,7 +4441,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "views-core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "serde",
  "toml 1.1.8+spec-1.1.0",
@@ -4449,7 +4449,7 @@ dependencies = [
 
 [[package]]
 name = "views-macos"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "block2",
  "dispatch2",
@@ -4464,14 +4464,14 @@ dependencies = [
 
 [[package]]
 name = "views-platform"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "views-core",
 ]
 
 [[package]]
 name = "views-settings"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "serde",
  "serde_json",
@@ -4490,7 +4490,7 @@ dependencies = [
 
 [[package]]
 name = "views-windows"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "views-core",
  "views-platform",
