@@ -10,6 +10,8 @@ Windows is supported. A macOS backend is written and builds, but [has not yet be
 
 Run `views_<version>_x64-setup.exe`. It installs for the current user only and asks for no administrator rights. Open **views** from the Start menu: that starts the Engine and shows the settings. To have the Engine start when you sign in, turn that on under General; it is off until you do.
 
+After that it updates itself: when a newer release exists, the General screen offers it, and one press installs it and reopens the settings.
+
 Uninstalling stops the Engine and removes the sign-in entry. Your config stays in `%APPDATA%iews`.
 
 On macOS, `views.app` is built unsigned. macOS ties the Accessibility permission the Engine needs to a signature, so an unsigned build loses that permission every time it is rebuilt, and other Macs will refuse to open it. [docs/macos.md](docs/macos.md) covers signing.
@@ -93,7 +95,16 @@ npm run tauri dev                  # the Settings UI alone
 npm run bundle                     # the installer, or views.app, with the Engine inside
 ```
 
-The Release workflow runs the same `npm run bundle` on Windows and macOS runners and keeps the results as artifacts.
+`npm run bundle` signs the installer for the updater, so it needs the signing key in `TAURI_SIGNING_PRIVATE_KEY`.
+
+## Releasing
+
+```sh
+cd ui
+npm run bump 0.2.0                 # the version, in both Cargo workspaces
+```
+
+Merge that to main. The Release workflow publishes a GitHub release for any version on main that has none, and installed copies offer it the next time their settings are opened ([ADR 0004](docs/adr/0004-the-settings-ui-updates-both-executables.md)).
 
 ## Layout
 

@@ -1,9 +1,10 @@
 import mark from "../../design/brand/finch-mark.png";
 import wordmark from "../../design/brand/finch-wordmark.png";
-import { autostart, configPath, features, setAutostart, version } from "../commands";
+import { autostart, configPath, features, installUpdate, setAutostart, updateAvailable, version } from "../commands";
 import { h } from "../dom";
 import type { Screen } from "../screens";
-import { panel, row, status, toggle } from "../ui";
+import { dirty } from "../store";
+import { button, panel, row, status, toggle } from "../ui";
 
 export const general: Screen = {
   name: "General",
@@ -15,6 +16,7 @@ export const general: Screen = {
     return [
       panel("Config file", row("Location", path)),
       startup(),
+      update(),
       panel(
         "About",
         h(
@@ -64,5 +66,39 @@ function startup(): HTMLElement {
   }
 
   void features().then(({ autostart: present }) => (present ? draw() : undefined));
+  return shown;
+}
+
+/** Offers the newest release. Absent while this is it, and where the platform has no updates. */
+function update(): HTMLElement {
+  const body = h("div");
+  const shown = panel("Update", body);
+  shown.hidden = true;
+  const show = (...lines: HTMLElement[]) => {
+    body.replaceChildren(...lines);
+    shown.hidden = false;
+  };
+
+  async function check(): Promise<void> {
+    try {
+      const found = await updateAvailable();
+      if (!found) return;
+      const offer = row(
+        "New version",
+        `views ${found}`,
+        button("Update", () => {
+          // Installing restarts the app, and a draft would not survive that.
+          if (dirty()) return show(offer, status("warn", "Save or revert your changes first."));
+          show(status("info", `Installing views ${found}. This window will close and open again.`));
+          installUpdate().catch((reason) => show(offer, status("bad", String(reason))));
+        }),
+      );
+      show(offer);
+    } catch (reason) {
+      show(status("none", String(reason)));
+    }
+  }
+
+  void features().then(({ updates }) => (updates ? check() : undefined));
   return shown;
 }

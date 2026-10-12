@@ -1,12 +1,34 @@
 name: Release
 
+# A push to main whose version has no release yet publishes one.
 on:
   workflow_dispatch:
   push:
-    tags: ["v*"]
+    branches: [main]
+
+permissions:
+  contents: write
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.read.outputs.tag }}
+      released: ${{ steps.read.outputs.released }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: read
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=v$(grep -m1 '^version' ui/src-tauri/Cargo.toml | cut -d'"' -f2)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          if gh release view "$tag" > /dev/null 2>&1; then released=true; else released=false; fi
+          echo "released=$released" >> "$GITHUB_OUTPUT"
+
   bundle:
+    needs: version
+    if: needs.version.outputs.released == 'false'
     strategy:
       fail-fast: false
       matrix:
@@ -24,14 +46,22 @@ jobs:
           cache-dependency-path: ui/package-lock.json
       - run: npm ci
       - run: npm run bundle
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
+      # Only the Windows installer is published: the unsigned views.app cannot update itself.
+      - if: runner.os == 'Windows'
+        shell: bash
+        run: node release.js "$TAG"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}
       # An .app is a directory, and an artifact does not keep its executable bits.
       - if: runner.os == 'macOS'
         run: tar -czf views.app.tar.gz -C src-tauri/target/release/bundle/macos views.app
-      - uses: actions/upload-artifact@v4
+      - if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
         with:
-          name: views-${{ runner.os }}
+          name: views-macOS
           if-no-files-found: error
-          path: |
-            ui/src-tauri/target/release/bundle/nsis/*-setup.exe
-            ui/views.app.tar.gz
-            ui/src-tauri/binaries/
+          path: ui/views.app.tar.gz
