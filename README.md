@@ -104,7 +104,7 @@ cd ui
 npm run bump 0.2.0                 # the version, in both Cargo workspaces
 ```
 
-Merge that to master. The Release workflow publishes a GitHub release for any version on master that has none, and installed copies offer it the next time their settings are opened ([ADR 0004](docs/adr/0004-the-settings-ui-updates-both-executables.md)).
+Merge that to main. The Release workflow publishes a GitHub release for any version on main that has none, and installed copies offer it the next time their settings are opened ([ADR 0004](docs/adr/0004-the-settings-ui-updates-both-executables.md)).
 
 ## Layout
 

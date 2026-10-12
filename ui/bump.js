@@ -1,5 +1,5 @@
 // Sets the version of the Engine and the Settings UI, which are separate Cargo workspaces
-// and must agree. Merging the change to master publishes the release.
+// and must agree. Merging the change to main publishes the release.
 
 import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";

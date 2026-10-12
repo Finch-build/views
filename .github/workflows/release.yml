@@ -1,10 +1,10 @@
 name: Release
 
-# A push to master whose version has no release yet publishes one.
+# A push to main whose version has no release yet publishes one.
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
 
 permissions:
   contents: write
