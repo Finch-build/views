@@ -12,8 +12,9 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use serde::Serialize;
-use tauri::{Manager, Webview, WebviewWindow, WindowEvent};
+use tauri::{AppHandle, Manager, Webview, WebviewWindow, WindowEvent};
 use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_updater::{Update, UpdaterExt};
 use views_core::{Config, Monitor};
 use views_platform::Desktop;
 
@@ -38,6 +39,7 @@ fn main() {
             }
         }))
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .on_window_event(|window, event| {
             // A minimised window's page is not told it is hidden, and would go on animating.
             if let WindowEvent::Resized(_) = event
@@ -61,7 +63,9 @@ fn main() {
             monitors,
             running_apps,
             installed::installed_apps,
-            browse
+            browse,
+            update_available,
+            install_update
         ])
         .run(tauri::generate_context!())
         .expect("the Settings UI could not start");
@@ -90,11 +94,12 @@ fn version() -> &'static str {
 struct Features {
     gaming: bool,
     autostart: bool,
+    updates: bool,
 }
 
 #[tauri::command]
 fn features() -> Features {
-    Features { gaming: cfg!(windows), autostart: cfg!(windows) }
+    Features { gaming: cfg!(windows), autostart: cfg!(windows), updates: cfg!(windows) }
 }
 
 /// The config on disk, or an empty one if there is no file yet.
@@ -160,6 +165,28 @@ async fn running_apps() -> Vec<App> {
 async fn browse(window: WebviewWindow) -> Option<String> {
     let file = window.dialog().file().set_parent(&window).blocking_pick_file()?;
     Some(file.into_path().ok()?.file_name()?.to_string_lossy().into_owned())
+}
+
+/// The newest release, if it is newer than this one.
+async fn newer(app: &AppHandle) -> Result<Option<Update>, String> {
+    let found = app.updater().map_err(|error| error.to_string())?.check().await;
+    found.map_err(|error| format!("Could not check for a new version: {error}"))
+}
+
+/// The version of a newer release, if there is one.
+#[tauri::command]
+async fn update_available(app: AppHandle) -> Result<Option<String>, String> {
+    Ok(newer(&app).await?.map(|update| update.version))
+}
+
+/// Downloads the newest release and runs its installer, which replaces the Engine and
+/// this executable and opens the Settings UI again.
+#[tauri::command]
+async fn install_update(app: AppHandle) -> Result<(), String> {
+    let update = newer(&app).await?.ok_or("This is the newest version.")?;
+    let installed = update.download_and_install(|_, _| {}, || {}).await;
+    installed.map_err(|error| format!("The new version could not be installed: {error}"))?;
+    app.restart()
 }
 
 /// Puts `text` at `path` in one step, so no reader ever sees half a file.

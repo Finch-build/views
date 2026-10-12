@@ -69,6 +69,7 @@ export const browse = () => invoke<string | null>("browse");
 export interface Features {
   gaming: boolean;
   autostart: boolean;
+  updates: boolean;
 }
 
 export const features = () => invoke<Features>("features");
@@ -77,3 +78,9 @@ export const features = () => invoke<Features>("features");
 export const autostart = () => invoke<boolean>("autostart");
 
 export const setAutostart = (on: boolean) => invoke<void>("set_autostart", { on });
+
+/** The version of a newer release, or null if this is the newest. */
+export const updateAvailable = () => invoke<string | null>("update_available");
+
+/** Installs the newest release. The app closes and reopens, so this resolves only by failing. */
+export const installUpdate = () => invoke<void>("install_update");
